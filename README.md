@@ -1,9 +1,24 @@
-This script will scrape user profile data from StackOverflow. It uses Google Spreadsheet for both input and output.
-It mainly works around Google Spreadsheet internal `IMPORTXML` scraping limitations.
+This script will scrape user profile data from StackOverflow. It uses Google Spreadsheet for both input (profile links) and output (reputation value).
+It mainly works around Google Spreadsheet internal `IMPORTXML` scraping limitations (throttle), 
+plus does a lot of normalisation and cleaning that you cannot do in a spreadsheet.
 
-# Get credentials
+We use [gspread](https://github.com/burnash/gspread) and bunch of well-known Python ecosystem libraries.
 
-Use Signed credentials (Service account). [It is like 100 unnecessary steps](https://gspread.readthedocs.io/en/latest/oauth2.html#using-signed-credentials). 
+# Input
+
+User give links to their StackOverflow.com profiles. The challenge is the following
+
+* Some users enter crap when they do not have a profile. Fo idea how this is possible, because the job description was published for SO.com users only.
+
+* There are story links like  https://stackoverflow.com/users/story/5038322
+
+* There are CV links like https://stackoverflow.com/users/story/12861492?view=Cv and https://stackoverflow.com/cv/dougmolina
+
+We need to normalise all this.
+
+# Get Google service account credentials
+
+Use Signed credentials (Service account). [It is like 100 steps to hell to get one](https://gspread.readthedocs.io/en/latest/oauth2.html#using-signed-credentials). 
 
 The resulting `service-accont.json` file should look like:
 
@@ -47,3 +62,8 @@ Everything is hardcoded in the script, so running it is just:
 ```sh
 python soscrape.py
 ```
+
+# Other 
+
+I did not know that you can have a score less than 10 if you have a question or an answer on StackOverflow. 
+I went and voted up those users to make my data look better.
