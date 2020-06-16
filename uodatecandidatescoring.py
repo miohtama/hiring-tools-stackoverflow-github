@@ -60,6 +60,7 @@ def calculate_checkbox_match_likeness(value):
   # Google spreadsheet separates values by command
   return len(value.split(","))
 
+
 def score_by_checkbox_matches(thresholds):
   """Give a different amount of points to the candidate how many checkboxes matches on the form"""
 
@@ -68,6 +69,23 @@ def score_by_checkbox_matches(thresholds):
 
     for threshold, score in thresholds:
       if likeness => threshold:
+        return score
+    return 0
+
+  return _inner
+
+
+def score_by_line_count(thresholds):
+  """Give a different score based on how many entries there the user inputed e.g. for delivered products"""
+
+  def _inner(value):
+
+    lines = value.split("\n")
+    # https://stackoverflow.com/a/3393470/315168
+    filled_line_count = len(filter(bool, lines)))
+
+    for threshold, score in thresholds:
+      if filled_line_count => threshold:
         return score
     return 0
 
@@ -87,25 +105,52 @@ def score_by_value_threshold(thresholds):
 
   return _inner
 
+
+def score_by_answer(thresholds):
+  """Give a different amount of points for different choice answer"""
+
+  def _inner(value):
+
+    for answer, score in thresholds:
+      if value == answer:
+        return score
+    return 0
+
+  return _inner
+
+
 # Scoring formula for TypeScript full stack candidates
 scoring = {
 
   # Has homepage
   "Homepage / portfolio / blog / Twitter / link": one_point_if_not_empty,
 
+  # How well the users prior tech stack experience matches with what our company uses - max 2 points
+  "Have you used any of the following technologies?": score_by_checkbox_matches([(8, 2), (4, 1)]),
+
   # Has worked with hacker programming languages
   "Have you worked with any of the following programming languages?": one_point_if_not_empty,
 
-  # Have you managed application deployments with any of the following technologies?
-  "Have you managed application deployments with any of the following technologies?": score_by_checkbox_matches([(8, 2). (4, 1)]),
-
+  # Open source contributions means the user can at least use Github/git on a basic level
   "List of open source projects you have contributed in": one_point_if_not_empty,
 
-  # Github repo count is proxy for opensource contributions - max 2 points
-  "Github repo count": score_by_value_threshold([(50, 2), (10, 1)]),
+  # Github repo count is proxy for opensource contributions - max 3 points
+  # We prefer this metric because it is very hard to fake
+  "Github repo count": score_by_value_threshold([(100, 3), (50, 2), (10, 1)]),
 
-  # StackOverflow rep is proxy for good communicator and helpful problem solver - max 2 points
-  "StackOverflow rep": score_by_value_threshold([(500, 2), (20, 1)]),
+  # StackOverflow rep is a proxy for a good communicator - max 3
+  # We prefer this metric because it is very hard to fake
+  "StackOverflow rep": score_by_value_threshold([(2000, 3), (500, 2), (20, 1)]),
+
+  # 1 score if remote team experience
+  "Have you worked with remote teams before": score_by_answer([("Yes", 1)]),
+
+  # How many delivered products the user lists - max 2 points
+  "Delivered products": score_by_line_count([(4, 2), (1, 1)]),
+
+  # You have some domain insight to the esports world so it gives you one point
+  "Do you play competitive multiplayer games on PC, console or mobile?": score_by_answer([("Yes", 1)]),
+
 }
 
 

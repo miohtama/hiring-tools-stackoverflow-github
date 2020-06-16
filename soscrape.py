@@ -33,7 +33,7 @@ print("Available sheets", file.worksheets())  # What tabs we have on file
 wks = file.get_worksheet(RESPONSE_TAB)
 
 # We start at row 2
-row = 250
+row = 2
 
 # How long is our spreadsheet
 row_count = wks.row_count
@@ -134,5 +134,6 @@ while row <= row_count:
 
     print("Got rep", reputation)
 
-    wks.update_acell(output_pointer, reputation)
+    # Use str() to avoid some random date conversions
+    wks.update_acell(output_pointer, str(reputation))
 
