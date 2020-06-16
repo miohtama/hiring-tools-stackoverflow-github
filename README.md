@@ -1,10 +1,22 @@
-This script will scrape user profile data from StackOverflow. It uses Google Spreadsheet for both input (profile links) and output (reputation value).
-It mainly works around Google Spreadsheet internal `IMPORTXML` scraping limitations (throttle), 
-plus does a lot of normalisation and cleaning that you cannot do in a spreadsheet.
+# Preface
 
-We use [gspread](https://github.com/burnash/gspread) and bunch of well-known Python ecosystem libraries.
+Here are scripts that I use to rank software developer candidates.
 
-# Input
+* The scripts communicate with Google Spreadsheet using [the spreadsheet API](https://github.com/burnash/gspread)
+
+* All candidates have inputted their data, including StackOverflow and Github profile links in Google Spreadsheets
+
+* These scripts will go through the candidate data and query SO and GH APIs for more candidate information
+
+* The results are stored back in the Google spreadsheet result column
+
+* Currently the scripts scrape **Stackoverflow Reputation** and **Github repository count**
+
+# Normalising human input
+
+The scripts will handle various cases of different inputs that we get from candidates on Google Forms.
+
+## Normalising StackOverflow profile links
 
 User give links to their StackOverflow.com profiles. The challenge is the following
 
@@ -14,11 +26,17 @@ User give links to their StackOverflow.com profiles. The challenge is the follow
 
 * There are CV links like https://stackoverflow.com/users/story/12861492?view=Cv and https://stackoverflow.com/cv/dougmolina
 
-We need to normalise all this.
+* Some people (recruitment agencies) give links to StackOverflow company pages
+
+## Normalising Github profiles
+
+* Some people enter `https://github.com` because they do not have Github profile
+
+
 
 # Get Google service account credentials
 
-Use Signed credentials (Service account). [It is like 100 steps to hell to get one](https://gspread.readthedocs.io/en/latest/oauth2.html#using-signed-credentials). 
+Use Signed credentials (Service account). [It is like 100 steps to hell to get one](https://gspread.readthedocs.io/en/latest/oauth2.html#using-signed-credentials).
 
 The resulting `service-accont.json` file should look like:
 
@@ -56,14 +74,29 @@ pip install -r requirements.txt
 
 # Run
 
+## Scraping StackOveflow reputation scores
+
 Share the spreadsheet with the service account email.
 
 Everything is hardcoded in the script, so running it is just:
+
 ```sh
 python soscrape.py
 ```
 
-# Other 
+## Scraping Github repository counts
 
-I did not know that you can have a score less than 10 if you have a question or an answer on StackOverflow. 
+You need to get Github API token from Github personal token panel.
+
+```sh
+GITHUB_USERNAME=miohtama GITHUB_TOKEN=xxx python githubscape.py
+```
+
+# Other
+
+I did not know that you can have a score less than 10 if you have a question or an answer on StackOverflow.
 I went and voted up those users to make my data look better.
+
+# License
+
+MIT

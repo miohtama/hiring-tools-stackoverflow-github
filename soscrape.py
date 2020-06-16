@@ -12,10 +12,10 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 
 #: Column contains SO.com profile link in a format like https://stackoverflow.com/users/4650364/rohit-verma
-SO_PROFILE_LINK_COLUMN = "AD"
+SO_PROFILE_LINK_COLUMN = "O"
 
 #: The column where we store scraped user repution
-SO_SCORE_COLUMN = "S"
+SO_SCORE_COLUMN = "C"
 
 #: Which tab 0....n contains our processing data
 RESPONSE_TAB = 1
@@ -26,21 +26,21 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name('service-account.
 gc = gspread.authorize(credentials)
 
 # Find out survey spreadsheet
-file = gc.open("Backend Candidate form responses")
+file = gc.open("Full stack candidate form (Responses)")
 print("Available sheets", file.worksheets())  # What tabs we have on file
 
 # Open a worksheet from spreadsheet with one shot
 wks = file.get_worksheet(RESPONSE_TAB)
 
 # We start at row 2
-row = 320
+row = 250
 
 # How long is our spreadsheet
 row_count = wks.row_count
 
 # acell returns empty value when we run over the end of spreadsheet
 while row <= row_count:
-    
+
     # Like AD340
     try:
         input_pointer = f"{SO_PROFILE_LINK_COLUMN}{row}"
@@ -51,22 +51,27 @@ while row <= row_count:
         existing_value = wks.acell(output_pointer).value
     except gspread.exceptions.APIError as e:
         # gspread.exceptions.APIError: {'code': 429, 'message': "Quota exceeded for quota group 'ReadGroup' and limit 'Read requests per user per 100 seconds' of service 'sheets.googleapis.com' for consumer 'project_number:'.", 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Google developer console API key', 'url': 'https://console.developers.google.com/project/15247561015/apiui/credential'}]}]}
-        if e.response.status_code == 429:            
+        if e.response.status_code == 429:
             print("Waiting, let's not overload Google")
             time.sleep(30)
             continue
         else:
-            raise 
-    
+            raise
+
     row += 1
 
-    # Don't scape 
+    # Don't scape
     if existing_value:
         print(output_pointer, "has already value", existing_value)
         continue
 
     if profile_link == "https://stackoverflow.com":
         print("Smart cookie")
+        wks.update_acell(output_pointer, 0)
+        continue
+
+    if "/companies/" in profile_link:
+        print("Somebody submitted a StackOverlow company page", profile_link)
         wks.update_acell(output_pointer, 0)
         continue
 
@@ -85,8 +90,8 @@ while row <= row_count:
         else:
             print("Did not have real user profile")
             wks.update_acell(output_pointer, 0)
-            continue            
-            
+            continue
+
         print("Transformed", profile_link, real_profile_link)
         profile_link = real_profile_link
     elif profile_link.startswith("https://stackoverflow.com/cv/"):
@@ -104,7 +109,7 @@ while row <= row_count:
             # https://stackoverflow.com/cv/pratu
             print("Did not have real user profile")
             wks.update_acell(output_pointer, 0)
-            continue            
+            continue
 
     if not profile_link:
         print("Missing profile", input_pointer)
