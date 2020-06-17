@@ -10,7 +10,6 @@ import requests
 import json
 import gspread
 from urllib.parse import urlparse
-from lxml import html
 from oauth2client.service_account import ServiceAccountCredentials
 
 
@@ -40,7 +39,7 @@ print("Available sheets", file.worksheets())  # What tabs we have on file
 wks = file.get_worksheet(RESPONSE_TAB)
 
 # We start at row 2
-row = 2
+row = 135
 
 # How long is our spreadsheet
 row_count = wks.row_count
@@ -78,18 +77,35 @@ while row <= row_count:
 
     if profile_link == "https://github.com":
         print("Smart cookie")
-        wks.update_acell(output_pointer, 0)
+        wks.update_acell(output_pointer, "0")
+        continue
+
+    if not (profile_link.startswith("https://github.com") or profile_link.startswith("https://www.github.com")):
+        print("Row", row, "bad link", profile_link)
+        wks.update_acell(output_pointer, "0")
+        continue
+
+    if profile_link.startswith("https://gist.github.com"):
+        print("Ignore gist link")
+        wks.update_acell(output_pointer, "0")
         continue
 
     parsed = urlparse(profile_link)
 
     # "https://api.github.com/users/" + "miohtama", "/public_repos"
     profile_name = parsed.path.rstrip("/").split("/")[-1]
-    print('Scraping repo data for Github user', profile_name)
+
+    assert profile_name, profile_link
+    print('Scraping repo data for Github user', profile_name, "on row", row, parsed)
     endpoint = f"https://api.github.com/users/{profile_name}"
     data = session.get(endpoint).json()
 
-    repos = data["public_repos"]
+    try:
+        repos = data["public_repos"]
+    except KeyError:
+        # Probably private profile / not found
+        print("Error data for", profile_link)
+        repos = 0
 
     print("Got repos", repos)
 

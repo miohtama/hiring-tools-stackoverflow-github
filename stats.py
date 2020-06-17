@@ -1,6 +1,7 @@
 """Calculate different stats over all candidates.
 
-Unlike other scripts, this works on a CSV input (I run out of Google Spreadsheet API quote)
+Unlike other scripts, this works offline on exported CSV file
+(I run out of Google Spreadsheet API quote).
 """
 
 import scorecard

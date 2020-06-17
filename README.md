@@ -12,6 +12,8 @@ Here are scripts that I use to rank software developer candidates.
 
 * Currently the scripts scrape **Stackoverflow Reputation** and **Github repository count**
 
+* A scorecard script will rank all candidates based by [the given scorecard formula]()
+
 # Normalising human input
 
 The scripts will handle various cases of different inputs that we get from candidates on Google Forms.
@@ -31,8 +33,6 @@ User give links to their StackOverflow.com profiles. The challenge is the follow
 ## Normalising Github profiles
 
 * Some people enter `https://github.com` because they do not have Github profile
-
-
 
 # Get Google service account credentials
 
@@ -92,10 +92,22 @@ You need to get Github API token from Github personal token panel.
 GITHUB_USERNAME=miohtama GITHUB_TOKEN=xxx python githubscape.py
 ```
 
-# Other
+## Scoring candidates
 
-I did not know that you can have a score less than 10 if you have a question or an answer on StackOverflow.
-I went and voted up those users to make my data look better.
+StackOverflow and Github data must be fetched first.
+
+This script will read all row data from the Google Spreadsheet, run it through the scorecard formula and store the score back.
+
+```sh
+python uodatecandidatescoring.py
+```
+
+```
+Updating row 393 candidate E**** N**** score 3
+Updating row 394 candidate S**** R**** score 1
+Updating row 395 candidate Y**** K**** score 6
+Done, score summaries for this batch
+```
 
 # License
 

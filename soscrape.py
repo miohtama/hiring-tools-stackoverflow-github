@@ -67,12 +67,12 @@ while row <= row_count:
 
     if profile_link == "https://stackoverflow.com":
         print("Smart cookie")
-        wks.update_acell(output_pointer, 0)
+        wks.update_acell(output_pointer, "0")
         continue
 
     if "/companies/" in profile_link:
         print("Somebody submitted a StackOverlow company page", profile_link)
-        wks.update_acell(output_pointer, 0)
+        wks.update_acell(output_pointer, "0")
         continue
 
     # Transform user story links to SO.com profile links if possible
@@ -89,7 +89,7 @@ while row <= row_count:
             real_profile_link = tree.cssselect(".network-account a")[0].get("href")
         else:
             print("Did not have real user profile")
-            wks.update_acell(output_pointer, 0)
+            wks.update_acell(output_pointer, "0")
             continue
 
         print("Transformed", profile_link, real_profile_link)
@@ -108,7 +108,7 @@ while row <= row_count:
             # No SO.com profile, though has CV. Whyyy???
             # https://stackoverflow.com/cv/pratu
             print("Did not have real user profile")
-            wks.update_acell(output_pointer, 0)
+            wks.update_acell(output_pointer, "0")
             continue
 
     if not profile_link:
@@ -118,7 +118,7 @@ while row <= row_count:
     if not profile_link.startswith("https://stackoverflow.com"):
         # User did not complete the form correctly
         print("Bad profile", profile_link)
-        wks.update_acell(output_pointer, 0)
+        wks.update_acell(output_pointer, "0")
         continue
 
     resp = requests.get(profile_link)

@@ -110,7 +110,7 @@ SCORING = {
 
     # StackOverflow rep is a proxy for a good communicator - max 3
     # We prefer this metric because it is very hard to fake
-    # "StackOverflow rep": score_by_value_threshold([(2000, 3), (500, 2), (20, 1)]),
+    "StackOverflow rep": score_by_value_threshold([(2000, 3), (500, 2), (20, 1)]),
 
     # 1 score if remote team experience
     "Have you worked with remote teams before": score_by_answer([("Yes", 1)]),
@@ -143,8 +143,10 @@ class Scorer:
             tags.add("experience_0_4")
         elif 4 <= experience < 7:
             tags.add("experience_4_7")
-        else:
+        elif experience >= 7:
             tags.add("experience_7+")
+        else:
+            raise RuntimeError()
 
         return set(tags)
 
@@ -168,6 +170,9 @@ class Scorer:
         total = sum(candidate_scores.values())
         for t in tags:
             self.summaries[t]["total"].append(total)
+            self.summaries[t]["years_of_experience"].append(float(line["Number of years in software development"]))
+            self.summaries[t]["repo_count"].append(float(line["Github repo count"]))
+            self.summaries[t]["so_rep"].append(locale.atof(line["StackOverflow rep"] or "0"))
 
         return candidate_scores
 
@@ -175,6 +180,3 @@ class Scorer:
         for category, question_data in self.summaries.items():
             for question, values in question_data.items():
                 print("Category", category, "question", question, min(values), max(values), statistics.mean(values), statistics.median(values))
-
-
-
