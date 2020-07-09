@@ -14,10 +14,10 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 
 #: Column contains SO.com profile link in a format like https://stackoverflow.com/users/4650364/rohit-verma
-PROFILE_LINK_COLUMN = "N"
+PROFILE_LINK_COLUMN = "S"
 
 #: The column where we store scraped user repution
-REPO_COUNT_SCORE_COLUMN = "D"
+REPO_COUNT_SCORE_COLUMN = "J"
 
 #: Which tab 0....n contains our processing data
 RESPONSE_TAB = 1
@@ -39,7 +39,7 @@ print("Available sheets", file.worksheets())  # What tabs we have on file
 wks = file.get_worksheet(RESPONSE_TAB)
 
 # We start at row 2
-row = 135
+row = 449
 
 # How long is our spreadsheet
 row_count = wks.row_count

@@ -12,10 +12,10 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 
 #: Column contains SO.com profile link in a format like https://stackoverflow.com/users/4650364/rohit-verma
-SO_PROFILE_LINK_COLUMN = "O"
+SO_PROFILE_LINK_COLUMN = "T"
 
 #: The column where we store scraped user repution
-SO_SCORE_COLUMN = "C"
+SO_SCORE_COLUMN = "I"
 
 #: Which tab 0....n contains our processing data
 RESPONSE_TAB = 1
@@ -33,7 +33,7 @@ print("Available sheets", file.worksheets())  # What tabs we have on file
 wks = file.get_worksheet(RESPONSE_TAB)
 
 # We start at row 2
-row = 2
+row = 449
 
 # How long is our spreadsheet
 row_count = wks.row_count
@@ -65,7 +65,7 @@ while row <= row_count:
         print(output_pointer, "has already value", existing_value)
         continue
 
-    if profile_link == "https://stackoverflow.com":
+    if profile_link in ("https://stackoverflow.com", "https://stackoverflow.com/"):
         print("Smart cookie")
         wks.update_acell(output_pointer, "0")
         continue

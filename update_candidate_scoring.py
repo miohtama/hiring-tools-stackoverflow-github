@@ -15,7 +15,7 @@ from scorecard import Scorer
 #: Which tab 0....n contains our processing data
 RESPONSE_TAB = 1
 
-SCORE_COLUMN = "B"
+SCORE_COLUMN = "H"
 
 # Get the spreadsheet open for our service account in readwrite mode
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -30,7 +30,7 @@ print("Available sheets", file.worksheets())  # What tabs we have on file
 wks = file.get_worksheet(RESPONSE_TAB)
 
 # We start at row 2
-row = 2
+row = 447
 
 # How long is our spreadsheet
 row_count = wks.row_count
